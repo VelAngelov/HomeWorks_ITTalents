@@ -16,8 +16,8 @@ public class P10_CaesarCrypt {
 		String text = in.next();
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < text.length(); i++) {
-			char c =text.charAt(i);
-			c+=5;
+			char c = text.charAt(i);
+			c += 5;
 			sb.append(c);
 		}
 		System.out.println(sb.toString());

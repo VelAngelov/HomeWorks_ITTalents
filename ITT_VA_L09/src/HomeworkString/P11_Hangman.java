@@ -13,7 +13,7 @@ public class P11_Hangman {
 		String regex = "[^ ]";
 		String text = original.replaceAll(regex, "_");
 		char c = 'a';
-		System.out.println("Can you suppose the word char by char?");
+		System.out.println("Can you guess the word char by char?");
 		System.out.println(text);
 		System.out.println("if you want to retire type 0");
 		while (text.indexOf("_") != -1) {
