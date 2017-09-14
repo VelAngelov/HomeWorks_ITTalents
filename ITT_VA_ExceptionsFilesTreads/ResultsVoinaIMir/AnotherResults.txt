@@ -1,0 +1,3 @@
+Longest word:високопревъзходителство
+War word count:185
+Piece word count:83
