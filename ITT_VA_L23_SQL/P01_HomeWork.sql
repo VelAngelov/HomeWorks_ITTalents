@@ -64,39 +64,120 @@ company (most senior people).*/
 select first_name, hire_date from hr.employees order by hire_date asc limit 10;
 /*16.Write a SQL query to find all departments and the town of
 their location. Use NATURAL JOIN.*/
-
+select  department_name, city from departments natural join locations;
 /*17.Write a SQL query to find all departments and the town of
 their location. Use join with USING clause.*/
+select d.department_name, l.city from departments d join locations l using (location_id);
 /*18.Write a SQL query to find all departments and the town of
 their location. Use inner join with ON clause.*/
+select d.department_name, l.city from departments d join locations l on (d.location_id = l.location_id);
 /*19.Modify the last SQL query to include also the name of the
 manager for each department.*/
+select concat(e.first_name,' ',e.last_name) as manager,d.department_name, l.city 
+from departments d join locations l on (d.location_id = l.location_id) 
+join employees e on(d.manager_id=e.manager_id);
 /*20.Write a SQL query to find all the locations and the
 departments for each location along with the locations that do not have
 department. User right outer join.*/
+select d.department_name,l.city from departments d 
+right outer join locations l on d.location_id = l.location_id;
 /*21.Rewrite the last SQL query to use left outer join.*/
+select l.city, d.department_name from locations l 
+left outer join departments d on d.location_id = l.location_id;
 /*22.Rewrite the last query to use WHERE instead of JOIN.*/
+/*select l.city, d.department_name from locations l full outer join departments d on (l.location_id = d.location_id);*/ 
+select l.city, d.department_name from locations l, departments d where l.location_id = d.location_id
+union
+select l.city,null from locations l where l.location_id not in 
+(select d.location_id from departments d);
+/*and l.location_id not (select l.city from locations l, departments d where l.location_id = d.location_id);*/
+select city from locations;
 /*23.Write a SQL query to find the manager name of each
 department.*/
+select d.department_name, concat(e.first_name,' ',e.last_name) as manager from departments d join employees e on(d.manager_id=e.employee_id);
 /*24.Modify the last SQL query to find also the location of each
 department manager.*/
+select d.department_name, concat(e.first_name,' ',e.last_name) as manager,l.city from departments d 
+join employees e on(d.manager_id=e.employee_id) 
+join locations l on(d.location_id=l.location_id);
 /*25.Write a SQL query to find the names of all employees from
 the departments "Sales" and "Finance" whose hire year is between 1995
 and 2000.*/
+select concat(e.first_name,' ',e.last_name) as employee_name,
+d.department_name, e.hire_date
+from employees as e 
+inner join departments as d 
+on (e.department_id = d.department_id)
+where d.department_name in ('Sales','Finance') 
+and e.hire_date between cast('1995-1-1' as date) and cast('2000-1-1' as date);
+
 /*26.Find all employees that have worked in the past in the
 department “Sales”. Use complex join condition.*/
+select concat(e.first_name,' ',e.last_name) as employee_name,d.department_name,j.start_date,j.end_date
+from employees as e
+inner join job_history as j
+on(e.employee_id = j.employee_id)
+inner join departments d
+on( e.department_id= d.department_id )
+where d.department_name ='sales';
+
 /*27.Write a SQL query to display all employees (first and last
 name) along with their corresponding manager (first and last name). Use
 self-join.*/
+select concat(e.first_name,' ',e.last_name) as empl_name, concat(m.first_name,' ',m.last_name) as manager
+from employees as e
+inner join employees as m
+on (e.manager_id = m.employee_id);
 /*28.Combine all first names with all last names of the employees
-with a CROSS JOIN.
-*/
+with a CROSS JOIN.*/
+select concat(e.first_name," ",e2.last_name) as full_name from employees e cross join employees e2;
 /*29.Write a SQL query to display all employees, along with their
 job title, department, location, country and region. Use multiple joins.*/
+
+select concat(e.first_name,' ',e.last_name) as name, j.job_title, d.department_name, l.city, l.state_province,
+c.country_name ,r.region_name
+from employees as e
+join departments as d
+on (e.department_id = d.department_id)
+join jobs as j
+on(e.job_id = j.job_id)
+join locations l
+on(d.location_id = l.location_id)
+join countries c
+on(l.country_id = c.country_id)
+join regions r
+on(c.region_id = r.region_id);
+
 /*30.Modify the last SQL query to display also the manager name
 for each employee or “No manager” in case there is no manager. */
+select concat(e.first_name,' ',e.last_name) as name,
+coalesce(concat(m.first_name,' ',m.last_name),'N/A') as manager,
+ j.job_title, d.department_name, l.city, l.state_province,
+c.country_name ,r.region_name
+from employees as e
+left join employees as m
+on(e.manager_id = m.employee_id)
+join departments as d
+on (e.department_id = d.department_id)
+join jobs as j
+on(e.job_id = j.job_id)
+join locations l
+on(d.location_id = l.location_id)
+join countries c
+on(l.country_id = c.country_id)
+join regions r
+on(c.region_id = r.region_id);
 /*31.Write a SQL query to find all employees that have worked in
 the past at job position “AC_ACCOUNT” and at some time later at job
 position “AC_MGR”. Display the employees’ names and current job title.
 Hint: first self-join JOB_HISTORY table, then apply filtering and finally
 join the result with EMPLOYEES and JOBS tables.*/
+select concat(e.first_name,' ',e.last_name) as name,jh.job_id as position_in_past1
+,jh2.job_id as position_in_past2,j.job_id as position_now,j.job_title as job_title_now
+from employees as e
+join job_history as jh
+on(e.employee_id = jh.employee_id and jh.job_id = 'AC_ACCOUNT')
+join job_history as jh2
+on (e.employee_id = jh2.employee_id and jh2.job_id = 'AC_MGR')
+join jobs as j
+on(e.job_id = j.job_id);
